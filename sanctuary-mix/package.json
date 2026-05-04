@@ -1,0 +1,24 @@
+{
+  "name": "sanctuary-mix",
+  "version": "1.0.0",
+  "description": "Professional web-based live audio mixer for church livestreams",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"CLIENT,SERVER\" --prefix-colors \"cyan,magenta\" \"npm run dev --workspace=client\" \"node server/index.js\"",
+    "build": "npm run build --workspace=client",
+    "start": "NODE_ENV=production node server/index.js",
+    "install:all": "npm install && npm install --workspace=client"
+  },
+  "workspaces": [
+    "client"
+  ],
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "socket.io": "^4.7.4"
+  },
+  "devDependencies": {}
+}
