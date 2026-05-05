@@ -1,0 +1,23 @@
+{
+  "id": "prayer-meeting",
+  "name": "Prayer Meeting",
+  "description": "Intimate prayer meeting with multiple mics and background music",
+  "channels": [
+    { "id": 1, "name": "Mic 1", "type": "Mic", "gain": 85, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 2, "name": "Mic 2", "type": "Mic", "gain": 85, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 3, "name": "Mic 3", "type": "Mic", "gain": 85, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 4, "name": "Mic 4", "type": "Mic", "gain": 85, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 5, "name": "Mic 5", "type": "Mic", "gain": 85, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 6, "name": "Mic 6", "type": "Mic", "gain": 85, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 7, "name": "Music/Worship", "type": "Music", "gain": 40, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 8, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 9, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 10, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 11, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 12, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 13, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 14, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 15, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 16, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } }
+  ]
+}

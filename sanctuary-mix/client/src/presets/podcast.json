@@ -1,0 +1,23 @@
+{
+  "id": "podcast",
+  "name": "Podcast",
+  "description": "Podcast recording with host, guests, and music bed",
+  "channels": [
+    { "id": 1, "name": "Host", "type": "Mic", "gain": 100, "eq": { "hi": 2, "mid": 1, "lo": -4 } },
+    { "id": 2, "name": "Guest 1", "type": "Mic", "gain": 90, "eq": { "hi": 1, "mid": 1, "lo": -3 } },
+    { "id": 3, "name": "Guest 2", "type": "Mic", "gain": 90, "eq": { "hi": 1, "mid": 1, "lo": -3 } },
+    { "id": 4, "name": "Music Bed", "type": "Music", "gain": 25, "eq": { "hi": -1, "mid": -2, "lo": -1 } },
+    { "id": 5, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 6, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 7, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 8, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 9, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 10, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 11, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 12, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 13, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 14, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 15, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 16, "name": "Unused", "type": "Mic", "gain": 0, "eq": { "hi": 0, "mid": 0, "lo": 0 } }
+  ]
+}

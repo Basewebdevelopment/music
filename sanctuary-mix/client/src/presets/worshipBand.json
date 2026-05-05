@@ -1,0 +1,23 @@
+{
+  "id": "worship-band",
+  "name": "Worship Band",
+  "description": "Contemporary worship band with vocals and full band setup",
+  "channels": [
+    { "id": 1, "name": "Lead Vocal", "type": "Mic", "gain": 100, "eq": { "hi": 2, "mid": 1, "lo": -3 } },
+    { "id": 2, "name": "BV 1", "type": "Mic", "gain": 75, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 3, "name": "BV 2", "type": "Mic", "gain": 75, "eq": { "hi": 1, "mid": 0, "lo": -2 } },
+    { "id": 4, "name": "Acoustic Guitar", "type": "Music", "gain": 80, "eq": { "hi": 2, "mid": -1, "lo": -2 } },
+    { "id": 5, "name": "Electric Guitar", "type": "Music", "gain": 70, "eq": { "hi": 1, "mid": 2, "lo": -1 } },
+    { "id": 6, "name": "Bass", "type": "Music", "gain": 75, "eq": { "hi": -2, "mid": 0, "lo": 4 } },
+    { "id": 7, "name": "Drums", "type": "Music", "gain": 65, "eq": { "hi": 1, "mid": -2, "lo": 3 } },
+    { "id": 8, "name": "Keys", "type": "Music", "gain": 70, "eq": { "hi": 1, "mid": 1, "lo": -1 } },
+    { "id": 9, "name": "Click Track", "type": "Backing", "gain": 20, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 10, "name": "Pads", "type": "Backing", "gain": 55, "eq": { "hi": 1, "mid": 0, "lo": -1 } },
+    { "id": 11, "name": "Aux 1", "type": "Backing", "gain": 30, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 12, "name": "Aux 2", "type": "Backing", "gain": 30, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 13, "name": "Aux 3", "type": "Backing", "gain": 30, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 14, "name": "Aux 4", "type": "Backing", "gain": 30, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 15, "name": "Aux 5", "type": "Backing", "gain": 30, "eq": { "hi": 0, "mid": 0, "lo": 0 } },
+    { "id": 16, "name": "Aux 6", "type": "Backing", "gain": 30, "eq": { "hi": 0, "mid": 0, "lo": 0 } }
+  ]
+}
