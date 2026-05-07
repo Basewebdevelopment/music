@@ -4,7 +4,8 @@ const DEFAULT_CHANNEL = (index) => ({
   id: index + 1,
   name: `CH ${String(index + 1).padStart(2, '0')}`,
   type: 'Mic', // Mic | Music | Backing
-  gain: 0,
+  gain: 75,   // fader unity at 75 (allows both cut and boost)
+  trim: 20,   // preamp trim in dB — 20dB boost suits typical mic levels
   muted: false,
   solo: false,
   eq: { hi: 0, mid: 0, lo: 0 },
@@ -41,6 +42,7 @@ export const useMixerStore = create((set, get) => ({
   aiEnabled: false,
   aiLog: [],
   connectedDevice: null,
+  inputChannelCount: 0,
   outputDevice: null,
   availableDevices: [],
   availableOutputDevices: [],
@@ -87,6 +89,7 @@ export const useMixerStore = create((set, get) => ({
   setDemoMode: (val) => set({ demoMode: val }),
   setAIEnabled: (val) => set({ aiEnabled: val }),
   setConnectedDevice: (device) => set({ connectedDevice: device, demoMode: !device }),
+  setInputChannelCount: (n) => set({ inputChannelCount: n }),
   setAvailableDevices: (devices) => set({ availableDevices: devices }),
   setAvailableOutputDevices: (devices) => set({ availableOutputDevices: devices }),
   setOutputDevice: (device) => set({ outputDevice: device }),

@@ -49,6 +49,7 @@ export default function RightPanel({ onConnectDevice, onSelectOutputDevice, outp
   const availableDevices = useMixerStore((s) => s.availableDevices)
   const availableOutputDevices = useMixerStore((s) => s.availableOutputDevices)
   const connectedDevice = useMixerStore((s) => s.connectedDevice)
+  const inputChannelCount = useMixerStore((s) => s.inputChannelCount)
   const outputDevice = useMixerStore((s) => s.outputDevice)
   const demoMode = useMixerStore((s) => s.demoMode)
   const [activeTab, setActiveTab] = useState('device')
@@ -158,12 +159,44 @@ export default function RightPanel({ onConnectDevice, onSelectOutputDevice, outp
                   background: '#0d1016',
                   border: '1px solid #252b38',
                   borderRadius: 4,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
                 }}
               >
-                <div style={{ fontSize: 8, color: '#8892a4', fontFamily: 'IBM Plex Mono', marginBottom: 3 }}>ACTIVE DEVICE</div>
-                <div style={{ fontSize: 10, color: '#e8eaf0', fontFamily: 'Syne', fontWeight: 600 }}>
-                  {connectedDevice.label || 'USB Audio Device'}
+                <div>
+                  <div style={{ fontSize: 8, color: '#8892a4', fontFamily: 'IBM Plex Mono', marginBottom: 3 }}>ACTIVE DEVICE</div>
+                  <div style={{ fontSize: 10, color: '#e8eaf0', fontFamily: 'Syne', fontWeight: 600 }}>
+                    {connectedDevice.label || 'USB Audio Device'}
+                  </div>
                 </div>
+                {inputChannelCount > 0 && (
+                  <div>
+                    <div style={{ fontSize: 8, color: '#8892a4', fontFamily: 'IBM Plex Mono', marginBottom: 4 }}>
+                      INPUT MAPPING — {inputChannelCount}ch
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {Array.from({ length: inputChannelCount }, (_, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: 9,
+                            fontFamily: 'IBM Plex Mono',
+                            color: '#4fc3f7',
+                            padding: '2px 4px',
+                            background: '#111418',
+                            borderRadius: 2,
+                          }}
+                        >
+                          <span style={{ color: '#8892a4' }}>Device CH{i + 1}</span>
+                          <span>→ Strip CH{String(i + 1).padStart(2, '0')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

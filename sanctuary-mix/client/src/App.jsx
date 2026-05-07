@@ -12,6 +12,7 @@ export default function App() {
   const demoMode = useMixerStore((s) => s.demoMode)
   const setDemoMode = useMixerStore((s) => s.setDemoMode)
   const setConnectedDevice = useMixerStore((s) => s.setConnectedDevice)
+  const setInputChannelCount = useMixerStore((s) => s.setInputChannelCount)
   const setAvailableDevices = useMixerStore((s) => s.setAvailableDevices)
   const setAvailableOutputDevices = useMixerStore((s) => s.setAvailableOutputDevices)
   const setOutputDevice = useMixerStore((s) => s.setOutputDevice)
@@ -57,6 +58,7 @@ export default function App() {
   useEffect(() => {
     if (demoMode) return
     audioEngine.onMasterVU = (l, r) => setMasterVU(l, r)
+    audioEngine.onVUUpdate = (id, level) => setChannelVU(id, level)
   }, [demoMode])
 
   const handleConnectDevice = useCallback(async (preferredDeviceId = null) => {
@@ -85,8 +87,11 @@ export default function App() {
         ? inputs.find((d) => d.deviceId === preferredDeviceId)
         : null
       const target = manuallySelected || usbMixer || inputs[0]
-      await audioEngine.connectDevice(target.deviceId)
+      const channelCount = await audioEngine.connectDevice(target.deviceId)
       setConnectedDevice(target)
+      setInputChannelCount(channelCount)
+      audioEngine.onMasterVU = (l, r) => setMasterVU(l, r)
+      audioEngine.onVUUpdate = (channelId, level) => setChannelVU(channelId, level)
       setDemoMode(false)
     } catch (err) {
       console.warn('Device connection failed, staying in demo mode', err)
@@ -109,6 +114,7 @@ export default function App() {
   useEffect(() => {
     if (demoMode) return
     channels.forEach((ch) => {
+      audioEngine.setChannelTrim(ch.id, ch.trim ?? 0)
       audioEngine.setChannelGain(ch.id, ch.gain)
       audioEngine.setChannelMute(ch.id, ch.muted)
       audioEngine.setChannelEQ(ch.id, ch.eq.hi, ch.eq.mid, ch.eq.lo)

@@ -24,6 +24,9 @@ export class AudioEngine {
     this.sourceNode = null
     this.currentOutputDeviceId = null
     this.splitter = null
+    this.inputSplitter = null
+    this.channelAnimFrameId = null
+    this.detectedChannelCount = 0
   }
 
   /**
@@ -72,19 +75,41 @@ export class AudioEngine {
     }
 
     this.stream = await navigator.mediaDevices.getUserMedia(constraints)
-    if (this.sourceNode) {
-      this.sourceNode.disconnect()
-    }
+
+    // Tear down previous input routing
+    if (this.sourceNode) this.sourceNode.disconnect()
+    if (this.inputSplitter) { this.inputSplitter.disconnect(); this.inputSplitter = null }
+
     this.sourceNode = this.ctx.createMediaStreamSource(this.stream)
 
-    // Route through master
-    this.sourceNode.connect(this.master.inputNode)
+    // Detect how many channels the device actually provides
+    const track = this.stream.getAudioTracks()[0]
+    const channelCount = Math.max(1, track?.getSettings?.()?.channelCount ?? 1)
+    this.detectedChannelCount = channelCount
+
+    if (channelCount === 1) {
+      // Mono: route entire stream into CH1
+      this._ensureChannelProcessor(1)
+      this.sourceNode.connect(this.channels.get(1).inputNode)
+    } else {
+      // Multi-channel: split each physical channel into its own strip
+      this.inputSplitter = this.ctx.createChannelSplitter(channelCount)
+      this.sourceNode.connect(this.inputSplitter)
+      for (let i = 0; i < channelCount; i++) {
+        const proc = this._ensureChannelProcessor(i + 1)
+        // Merge single split output back to mono for the channel strip
+        const mono = this.ctx.createChannelMerger(1)
+        this.inputSplitter.connect(mono, i, 0)
+        mono.connect(proc.inputNode)
+      }
+    }
 
     // Start monitor element playback (required for sink routing).
     await this.monitorElement.play().catch(() => {})
 
     this._startAnalysers()
-    return true
+    this._startChannelVUUpdates()
+    return channelCount
   }
 
   supportsOutputRouting() {
@@ -105,13 +130,13 @@ export class AudioEngine {
    */
   setChannelGain(channelId, gainValue) {
     if (!this.initialized) return
-    let proc = this.channels.get(channelId)
-    if (!proc) {
-      proc = new ChannelProcessor(this.ctx, channelId)
-      proc.outputNode.connect(this.master.inputNode)
-      this.channels.set(channelId, proc)
-    }
+    const proc = this._ensureChannelProcessor(channelId)
     proc.setGain(gainValue)
+  }
+
+  setChannelTrim(channelId, db) {
+    const proc = this.channels.get(channelId)
+    if (proc) proc.setTrim(db)
   }
 
   setChannelMute(channelId, muted) {
@@ -131,6 +156,16 @@ export class AudioEngine {
   getChannelRMS(channelId) {
     const proc = this.channels.get(channelId)
     return proc ? proc.getRMS() : 0
+  }
+
+  _ensureChannelProcessor(channelId) {
+    let proc = this.channels.get(channelId)
+    if (!proc) {
+      proc = new ChannelProcessor(this.ctx, channelId)
+      proc.outputNode.connect(this.master.inputNode)
+      this.channels.set(channelId, proc)
+    }
+    return proc
   }
 
   _startAnalysers() {
@@ -170,8 +205,23 @@ export class AudioEngine {
     this.animFrameId = requestAnimationFrame(tick)
   }
 
+  _startChannelVUUpdates() {
+    if (this.channelAnimFrameId) cancelAnimationFrame(this.channelAnimFrameId)
+    const tick = () => {
+      if (this.onVUUpdate) {
+        for (const [channelId, proc] of this.channels) {
+          this.onVUUpdate(channelId, proc.getRMS())
+        }
+      }
+      this.channelAnimFrameId = requestAnimationFrame(tick)
+    }
+    this.channelAnimFrameId = requestAnimationFrame(tick)
+  }
+
   destroy() {
     if (this.animFrameId) cancelAnimationFrame(this.animFrameId)
+    if (this.channelAnimFrameId) cancelAnimationFrame(this.channelAnimFrameId)
+    if (this.inputSplitter) { this.inputSplitter.disconnect(); this.inputSplitter = null }
     if (this.stream) this.stream.getTracks().forEach((t) => t.stop())
     if (this.sourceNode) this.sourceNode.disconnect()
     if (this.monitorElement) {

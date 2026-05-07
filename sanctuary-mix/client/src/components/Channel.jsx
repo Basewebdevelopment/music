@@ -151,6 +151,21 @@ export default function Channel({ channelId }) {
         {channel.type}
       </div>
 
+      {/* Gain Trim knob */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+        <div style={{ fontSize: 7, color: '#e8a23c', fontFamily: 'IBM Plex Mono', letterSpacing: '0.05em' }}>
+          GAIN
+        </div>
+        <Knob
+          label={`${channel.trim >= 0 ? '+' : ''}${channel.trim}dB`}
+          value={channel.trim ?? 0}
+          min={-20}
+          max={40}
+          size={22}
+          onChange={(v) => updateChannel(channelId, { trim: Math.round(v) })}
+        />
+      </div>
+
       {/* EQ Knobs */}
       <div style={{ display: 'flex', gap: 2 }}>
         <Knob
@@ -158,7 +173,7 @@ export default function Channel({ channelId }) {
           value={channel.eq.hi}
           min={-15}
           max={15}
-          size={18}
+          size={16}
           onChange={(v) => updateChannelEQ(channelId, 'hi', v)}
         />
         <Knob
@@ -166,7 +181,7 @@ export default function Channel({ channelId }) {
           value={channel.eq.mid}
           min={-15}
           max={15}
-          size={18}
+          size={16}
           onChange={(v) => updateChannelEQ(channelId, 'mid', v)}
         />
         <Knob
@@ -174,7 +189,7 @@ export default function Channel({ channelId }) {
           value={channel.eq.lo}
           min={-15}
           max={15}
-          size={18}
+          size={16}
           onChange={(v) => updateChannelEQ(channelId, 'lo', v)}
         />
       </div>
