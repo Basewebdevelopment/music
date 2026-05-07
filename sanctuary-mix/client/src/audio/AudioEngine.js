@@ -19,6 +19,11 @@ export class AudioEngine {
     this.onVUUpdate = null // callback(channelId, level)
     this.onMasterVU = null // callback(left, right)
     this.initialized = false
+    this.outputStream = null
+    this.monitorElement = null
+    this.sourceNode = null
+    this.currentOutputDeviceId = null
+    this.splitter = null
   }
 
   /**
@@ -37,6 +42,12 @@ export class AudioEngine {
     }
 
     this.master = new MasterProcessor(this.ctx)
+    this.outputStream = this.ctx.createMediaStreamDestination()
+    this.master.outputNode.connect(this.outputStream)
+    this.monitorElement = new Audio()
+    this.monitorElement.autoplay = true
+    this.monitorElement.playsInline = true
+    this.monitorElement.srcObject = this.outputStream.stream
     this.initialized = true
   }
 
@@ -61,13 +72,31 @@ export class AudioEngine {
     }
 
     this.stream = await navigator.mediaDevices.getUserMedia(constraints)
-    const sourceNode = this.ctx.createMediaStreamSource(this.stream)
+    if (this.sourceNode) {
+      this.sourceNode.disconnect()
+    }
+    this.sourceNode = this.ctx.createMediaStreamSource(this.stream)
 
     // Route through master
-    sourceNode.connect(this.master.inputNode)
-    this.master.outputNode.connect(this.ctx.destination)
+    this.sourceNode.connect(this.master.inputNode)
+
+    // Start monitor element playback (required for sink routing).
+    await this.monitorElement.play().catch(() => {})
 
     this._startAnalysers()
+    return true
+  }
+
+  supportsOutputRouting() {
+    return Boolean(this.monitorElement && typeof this.monitorElement.setSinkId === 'function')
+  }
+
+  async setOutputDevice(deviceId) {
+    await this.init()
+    if (!this.supportsOutputRouting()) return false
+    await this.monitorElement.setSinkId(deviceId)
+    this.currentOutputDeviceId = deviceId
+    await this.monitorElement.play().catch(() => {})
     return true
   }
 
@@ -106,16 +135,18 @@ export class AudioEngine {
 
   _startAnalysers() {
     if (!this.master) return
+    if (this.animFrameId) cancelAnimationFrame(this.animFrameId)
+    if (this.splitter) this.splitter.disconnect()
 
     this.analyserL = this.ctx.createAnalyser()
     this.analyserR = this.ctx.createAnalyser()
     this.analyserL.fftSize = 256
     this.analyserR.fftSize = 256
 
-    const splitter = this.ctx.createChannelSplitter(2)
-    this.master.outputNode.connect(splitter)
-    splitter.connect(this.analyserL, 0)
-    splitter.connect(this.analyserR, 1)
+    this.splitter = this.ctx.createChannelSplitter(2)
+    this.master.outputNode.connect(this.splitter)
+    this.splitter.connect(this.analyserL, 0)
+    this.splitter.connect(this.analyserR, 1)
 
     this._animateVU()
   }
@@ -142,6 +173,11 @@ export class AudioEngine {
   destroy() {
     if (this.animFrameId) cancelAnimationFrame(this.animFrameId)
     if (this.stream) this.stream.getTracks().forEach((t) => t.stop())
+    if (this.sourceNode) this.sourceNode.disconnect()
+    if (this.monitorElement) {
+      this.monitorElement.pause()
+      this.monitorElement.srcObject = null
+    }
     if (this.ctx) this.ctx.close()
     this.channels.clear()
     this.initialized = false

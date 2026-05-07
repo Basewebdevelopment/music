@@ -13,6 +13,8 @@ export default function App() {
   const setDemoMode = useMixerStore((s) => s.setDemoMode)
   const setConnectedDevice = useMixerStore((s) => s.setConnectedDevice)
   const setAvailableDevices = useMixerStore((s) => s.setAvailableDevices)
+  const setAvailableOutputDevices = useMixerStore((s) => s.setAvailableOutputDevices)
+  const setOutputDevice = useMixerStore((s) => s.setOutputDevice)
   const setChannelVU = useMixerStore((s) => s.setChannelVU)
   const setMasterVU = useMixerStore((s) => s.setMasterVU)
   const updateChannel = useMixerStore((s) => s.updateChannel)
@@ -57,12 +59,14 @@ export default function App() {
     audioEngine.onMasterVU = (l, r) => setMasterVU(l, r)
   }, [demoMode])
 
-  const handleConnectDevice = useCallback(async () => {
+  const handleConnectDevice = useCallback(async (preferredDeviceId = null) => {
     try {
       await audioEngine.init()
       const devices = await navigator.mediaDevices.enumerateDevices()
       const inputs = devices.filter((d) => d.kind === 'audioinput')
+      const outputs = devices.filter((d) => d.kind === 'audiooutput')
       setAvailableDevices(inputs)
+      setAvailableOutputDevices(outputs)
 
       if (inputs.length === 0) {
         setDemoMode(true)
@@ -77,7 +81,10 @@ export default function App() {
         d.label.toLowerCase().includes('interface')
       )
 
-      const target = usbMixer || inputs[0]
+      const manuallySelected = preferredDeviceId
+        ? inputs.find((d) => d.deviceId === preferredDeviceId)
+        : null
+      const target = manuallySelected || usbMixer || inputs[0]
       await audioEngine.connectDevice(target.deviceId)
       setConnectedDevice(target)
       setDemoMode(false)
@@ -85,7 +92,18 @@ export default function App() {
       console.warn('Device connection failed, staying in demo mode', err)
       setDemoMode(true)
     }
-  }, [setAvailableDevices, setConnectedDevice, setDemoMode])
+  }, [setAvailableDevices, setAvailableOutputDevices, setConnectedDevice, setDemoMode])
+
+  const handleSelectOutputDevice = useCallback(async (deviceId) => {
+    const ok = await audioEngine.setOutputDevice(deviceId)
+    if (!ok) return false
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    const outputs = devices.filter((d) => d.kind === 'audiooutput')
+    setAvailableOutputDevices(outputs)
+    const selected = outputs.find((d) => d.deviceId === deviceId) || null
+    setOutputDevice(selected)
+    return true
+  }, [setAvailableOutputDevices, setOutputDevice])
 
   // Sync channel gains to audio engine
   useEffect(() => {
@@ -220,7 +238,7 @@ export default function App() {
         </div>
 
         {/* Right panel */}
-        <RightPanel onConnectDevice={handleConnectDevice} />
+        <RightPanel onConnectDevice={handleConnectDevice} onSelectOutputDevice={handleSelectOutputDevice} outputRoutingSupported={audioEngine.supportsOutputRouting()} />
       </div>
     </div>
   )

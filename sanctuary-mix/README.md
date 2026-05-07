@@ -26,8 +26,9 @@ Open http://localhost:5173 in Chrome.
 ## VMix Setup
 
 1. Install [VB-Cable](https://vb-audio.com/Cable/) (Windows) or [BlackHole](https://existential.audio/blackhole/) (Mac) — both free
-2. In SanctuaryMix → Connect Device → select your USB mixer
-3. In VMix → Add Input → Audio Device → select "VB-Cable Output"
+2. In SanctuaryMix → Connect Device, then click your USB mixer in Available Inputs
+3. In SanctuaryMix Device panel → Output Routing → select BlackHole/VB-Cable
+4. In VMix → Add Input → Audio Device → select "VB-Cable Output"
 
 ## Environment Variables
 
@@ -52,6 +53,8 @@ AI_MODE=local
 - AI AutoMix: voice activity detection, auto gain control, peak prevention
 - Demo mode — works without any audio device connected
 - Real-time AI event log
+- Manual input device switching from the Device panel
+- Manual output routing to virtual cable devices (browser support required)
 - SQLite preset storage
 
 ## Browser Support

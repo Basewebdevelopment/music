@@ -43,6 +43,7 @@ export const useMixerStore = create((set, get) => ({
   connectedDevice: null,
   outputDevice: null,
   availableDevices: [],
+  availableOutputDevices: [],
 
   // Actions
   updateChannel: (id, updates) =>
@@ -87,6 +88,7 @@ export const useMixerStore = create((set, get) => ({
   setAIEnabled: (val) => set({ aiEnabled: val }),
   setConnectedDevice: (device) => set({ connectedDevice: device, demoMode: !device }),
   setAvailableDevices: (devices) => set({ availableDevices: devices }),
+  setAvailableOutputDevices: (devices) => set({ availableOutputDevices: devices }),
   setOutputDevice: (device) => set({ outputDevice: device }),
 
   addAILog: (entry) =>

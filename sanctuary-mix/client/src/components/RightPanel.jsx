@@ -42,12 +42,14 @@ function ProcessingSlider({ label, value, onChange }) {
   )
 }
 
-export default function RightPanel({ onConnectDevice }) {
+export default function RightPanel({ onConnectDevice, onSelectOutputDevice, outputRoutingSupported }) {
   const master = useMixerStore((s) => s.master)
   const processing = useMixerStore((s) => s.processing)
   const updateProcessing = useMixerStore((s) => s.updateProcessing)
   const availableDevices = useMixerStore((s) => s.availableDevices)
+  const availableOutputDevices = useMixerStore((s) => s.availableOutputDevices)
   const connectedDevice = useMixerStore((s) => s.connectedDevice)
+  const outputDevice = useMixerStore((s) => s.outputDevice)
   const demoMode = useMixerStore((s) => s.demoMode)
   const [activeTab, setActiveTab] = useState('device')
 
@@ -129,7 +131,7 @@ export default function RightPanel({ onConnectDevice }) {
                 Audio Device
               </div>
               <button
-                onClick={onConnectDevice}
+                onClick={() => onConnectDevice?.()}
                 style={{
                   width: '100%',
                   height: 32,
@@ -172,27 +174,91 @@ export default function RightPanel({ onConnectDevice }) {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {availableDevices.map((d) => (
-                    <div
+                    <button
                       key={d.deviceId}
+                      onClick={() => onConnectDevice?.(d.deviceId)}
                       style={{
                         fontSize: 9,
-                        color: '#8892a4',
+                        color: connectedDevice?.deviceId === d.deviceId ? '#81c784' : '#8892a4',
                         fontFamily: 'IBM Plex Mono',
                         padding: '4px 6px',
                         background: '#0d1016',
                         borderRadius: 3,
-                        border: '1px solid #1a1f28',
+                        border: connectedDevice?.deviceId === d.deviceId ? '1px solid #81c78455' : '1px solid #1a1f28',
+                        cursor: 'pointer',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
+                        textAlign: 'left',
                       }}
+                      title={d.label || `Input ${d.deviceId.slice(0, 8)}`}
                     >
-                      {d.label || `Input ${d.deviceId.slice(0, 8)}`}
-                    </div>
+                      {connectedDevice?.deviceId === d.deviceId ? '● ' : ''}{d.label || `Input ${d.deviceId.slice(0, 8)}`}
+                    </button>
                   ))}
                 </div>
               </div>
             )}
+
+            <button
+              onClick={() => onConnectDevice?.()}
+              style={{
+                width: '100%',
+                height: 26,
+                fontSize: 10,
+                fontFamily: 'IBM Plex Mono',
+                background: '#111418',
+                border: '1px solid #252b38',
+                borderRadius: 3,
+                color: '#8892a4',
+                cursor: 'pointer',
+                letterSpacing: '0.05em',
+              }}
+            >
+              Refresh Inputs
+            </button>
+
+            <div style={{ height: 1, background: '#252b38' }} />
+
+            <div>
+              <div style={{ fontSize: 9, color: '#8892a4', fontFamily: 'Syne', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>
+                Output Routing
+              </div>
+              {!outputRoutingSupported && (
+                <div style={{ fontSize: 9, color: '#e8a23c', fontFamily: 'IBM Plex Mono', lineHeight: 1.5, marginBottom: 6 }}>
+                  Browser output routing not supported. Set BlackHole/VB-Cable as system output.
+                </div>
+              )}
+              {availableOutputDevices.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  {availableOutputDevices.map((d) => (
+                    <button
+                      key={d.deviceId}
+                      disabled={!outputRoutingSupported}
+                      onClick={() => onSelectOutputDevice?.(d.deviceId)}
+                      style={{
+                        fontSize: 9,
+                        color: outputDevice?.deviceId === d.deviceId ? '#4fc3f7' : '#8892a4',
+                        fontFamily: 'IBM Plex Mono',
+                        padding: '4px 6px',
+                        background: '#0d1016',
+                        borderRadius: 3,
+                        border: outputDevice?.deviceId === d.deviceId ? '1px solid #4fc3f755' : '1px solid #1a1f28',
+                        cursor: outputRoutingSupported ? 'pointer' : 'not-allowed',
+                        opacity: outputRoutingSupported ? 1 : 0.55,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        textAlign: 'left',
+                      }}
+                      title={d.label || `Output ${d.deviceId.slice(0, 8)}`}
+                    >
+                      {outputDevice?.deviceId === d.deviceId ? '● ' : ''}{d.label || `Output ${d.deviceId.slice(0, 8)}`}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div style={{ padding: '10px', background: '#0d1016', borderRadius: 4, border: '1px solid #1a1f28' }}>
               <div style={{ fontSize: 9, color: '#e8a23c', fontFamily: 'Syne', fontWeight: 700, marginBottom: 6 }}>
